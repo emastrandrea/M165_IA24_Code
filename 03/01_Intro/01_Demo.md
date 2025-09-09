@@ -28,13 +28,24 @@ export PATH=$MongoDB/tools/bin:$MongoDB/mogosh/bin:$PATH
 
 ---
 
-## Import der Sample-Datenbank *sample\_mflix*
+## Import der Datenbank *sample_mflix*
+
+Navigieren Sie zum Dump-Ordner aus dem geklonten Repository:
 
 ```bash
 cd //Path_To_Clone_From_Repo
 cd 03/sample-db/dump
 ls
 mongorestore ....
-
-Soll ich den `mongorestore`-Befehl für das Repo schon **vollständig ausschreiben**, z. B. für die *sample_mflix*-Datenbank?
 ```
+
+## Datenbank wiederherstellen
+
+```bash
+mongorestore --db sample_mflix ./sample_mflix
+```
+
+# Hinweise
+--db sample_mflix legt die Ziel-Datenbank fest.
+
+Der Pfad ./sample_mflix bzw. .\sample_mflix verweist auf den Ordner mit den BSON-Dumps.
