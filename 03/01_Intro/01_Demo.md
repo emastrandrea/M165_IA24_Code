@@ -6,7 +6,7 @@
 
 ---
 
-## Set Path Variable (Bash)
+## Pfadvariable setzen (Bash)
 
 ```bash
 cd
@@ -15,7 +15,7 @@ touch .bash_profile    # oder: cat .bash_profile
 nano .bash_profile
 ````
 
-### In Nano-Editor hinzufügen:
+### Im Nano-Editor
 
 ```bash
 ## SET PATH
@@ -23,7 +23,7 @@ export MongoDB='c/ProgramFiles/MongoDB/Server'
 export PATH=$MongoDB/tools/bin:$MongoDB/mogosh/bin:$PATH
 ```
 
-* Datei speichern (**CTRL + O**)
+* Datei speichern (**CTRL + S**)
 * Nano verlassen (**CTRL + X**)
 
 ---
@@ -35,17 +35,15 @@ Navigieren Sie zum Dump-Ordner aus dem geklonten Repository:
 ```bash
 cd //Path_To_Clone_From_Repo
 cd 03/sample-db/dump
-ls
-mongorestore ....
 ```
 
 ## Datenbank wiederherstellen
 
 ```bash
-mongorestore --db sample_mflix ./sample_mflix
+mongorestore --db mflix ./sample_mflix
 ```
 
 # Hinweise
---db sample_mflix legt die Ziel-Datenbank fest.
+--db mflix legt die Ziel-Datenbank fest.
 
 Der Pfad ./sample_mflix bzw. .\sample_mflix verweist auf den Ordner mit den BSON-Dumps.
