@@ -1,0 +1,282 @@
+/*
+BASIC MONGODB QUERIES BY
+* FINDING DOCUMENTS
+* CHOOSING THE FIELDS FOR THE OUTPUT
+* COUNTING THE DOCUMENTS
+* CONDITIONAL OPERATORS
+* LOGICAL OPERATORS
+*/
+show databases
+
+//Switch to mflix
+use mflix
+/* Basic MongoDB Queries
+These queries are based on the top-level (also known as root-level) fields in the documents.
+*/
+
+/*
+FINDING DOCUMENTS
+The most basic query in MongoDB is performed by find() on the collection.
+When this method is executed without any argument, it returns all the documents
+in a collection.
+This query calls the find() method on the collection named comments.
+*/
+db.comments.find()
+
+/*
+To find comments that have been added by a specific user (i.e. Lauren Carr) a name field with the value Lauren Carr
+has to be added
+*/
+
+//SELECT * FROM comments WHERE name = 'Lauren Carr';
+db.comments.find({"name" : "Lauren Carr"})
+
+/*
+Using findOne()
+findOne() returns only one matching record.
+This is very useful when you are looking to isolate a specific record.
+*/
+db.comments.findOne()
+
+/*
+You can capture the cursor returned by the find() in a variable and
+iterate through the elements.
+*/
+
+let comments = db.comments.find({"name" : "Lauren Carr"})
+if (comments.hasNext) {
+    comments.next()
+}
+
+/*
+CHOOSING THE FIELDS FOR THE OUTPUT
+*/
+
+db.movies.find(
+    {title : {$regex: /Poor/}},
+    {rated : 1, _id:1, title:1}
+)
+
+/*
+Finding the Distinct Fields
+The distinct() function is used to get the distinct or unique values
+of a field with or without query criteria.
+The distinct() method is used to get unique values of a field.
+*/
+db.movies.distinct("rated")
+
+/*
+distinct() can also be used along with a query condition.
+The following example finds all the unique ratings the films have received
+that were released in 1994
+*/
+db.movies.distinct("rated",{year : 1994})
+
+/*
+COUNTING THE DOCUMENTS
+*/
+db.movies.countDocuments({})
+db.movies.countDocuments({"num_mflix_comments" : 6})
+
+/*
+CONDITIONAL OPERATORS
+*/
+/*
+Equals ($eq)
+The following queries find and return movies that have exactly 5 comments.
+Both queries have the same effect.
+*/
+db.movies.find({"num_mflix_comments" : 5})
+db.movies.find({"num_mflix_comments" : 5}).count()
+db.movies.find({"num_mflix_comments" : {$eq : 5 }})
+
+//Not Equal To ($ne)
+db.movies.find(
+    { "num_mflix_comments" :
+        {$ne : 5 }
+    }
+)
+
+/* Greater Than ($gt) and Greater Than or Equal To ($gte)
+Movies that had been released after 2015:
+*/
+db.movies.find(
+    {year : {$gt : 2015}}
+).count()
+
+
+//Movies that have been released since January 1, 2000
+db.movies.find(
+    {"released" :
+        {$gte: new Date('2000-01-01')}
+    }
+).count()
+
+/* Less Than ($lt) and Less Than or Equal To ($lte)
+To count the movies that were released in the previous century (before 2000-01-01):
+*/
+db.movies.find(
+    {"released" :
+        {$lt : new Date('2000-01-01')}
+    }
+).count()
+
+/* In ($in) and Not In ($nin)
+What if a user wants a list of all movies that have been rated G, PG, or PG-13?
+A query with $in operator returns movies rated as either of G, PG, or PG-13:
+*/
+db.movies.find(
+    {"rated" :
+        {$in : ["G", "PG", "PG-13"]}
+    }
+)
+
+/*
+The $nin operator stands for Not In and matches all the documents where the value of the field does not match
+with any of the array elements
+*/
+db.movies.find(
+    {"rated" :
+        {$nin : ["G", "PG", "PG-13"]}
+    }
+)
+
+/*
+To see what happens when you use $nin with a non-existent field,
+first, find the total documents you have. Then use $nin with some
+values (except null) on a non-existent object.
+*/
+db.movies.countDocuments()
+db.movies.countDocuments(
+    {"nef" :
+        {$nin : ["a value", "another value"]}
+    }
+)
+
+//In the following example, add a null value to the $nin array:
+db.movies.countDocuments(
+    {"nef" :
+        {$nin : ["a value", "another value", null ]}
+    }
+)
+
+/*
+LOGICAL OPERATORS
+*/
+
+/*
+$and operator
+Using the $and operator, you can have any number of conditions wrapped in an array
+and the operator will return only the documents that satisfy all the conditions.
+When a document fails a condition check, the next conditions are skipped.
+
+I.e. you want to determine the count of unrated movies that were released in 2008.
+This query must have two conditions
+- The field rated should have a value of UNRATED
+- The field year must be equal to 2008
+*/
+db.movies.countDocuments (
+    {$and :
+        [{"rated" : "UNRATED"}, {"year" : 2008}]
+    }
+)
+/* the $and operator is implicit and included by default if a query document has more than one condition.
+For example, the following query can be rewritten without using the $and operator
+*/
+db.movies.countDocuments (
+    {"rated": "UNRATED", "year" : 2008}
+)
+
+/* $or Operator
+Using the $or operator, multiple conditions wrapped in an array can passed.
+This operator is used when we have multiple conditions and we want to find documents
+that match at least one condition.
+
+In the example the query finds all movies that are either rated G,
+were released in 2005, or have at least 5 comments.
+*/
+db.movies.find(
+    {$or:[
+        {"rated" : "G"},
+        {"year" : 2005},
+        {"num_mflix_comments" : {$gte : 5}}
+   ]},
+   {rated: 1, year: 1, num_mflix_comments:1,_id:0}
+)
+
+/*
+$nor Operator
+The $nor operator is syntactically like $or but behaves in the opposite way.
+The $nor operator accepts multiple conditional expressions in the form of an array and returns
+the documents that do not satisfy any of the given conditions.
+*/
+db.movies.find(
+    {$nor:[
+        {"rated" : "G"},
+        {"year" : 2005},
+        {"num_mflix_comments" : {$gte : 5}}
+    ]},
+    {rated: 1, year: 1, num_mflix_comments:1}
+)
+
+/* $not Operator
+The $not operator represents the logical NOT operation that negates the given condition.
+The $not operator accepts a conditional expression and matches all the documents that do not satisfy it.
+*/
+db.movies.find(
+    {"num_mflix_comments" :
+        {$not : {$gte : 5} }
+    }
+)
+
+/*
+REGULAR EXPRESSIONS
+*/
+
+/*
+In MongoDB queries, regular expressions can be used
+Imagine you have typed the word Opera into the search box and want to find all the movies
+whose titles contain this character pattern. Then a regular expression query can be used
+with the $regex operator.
+*/
+db.movies.find(
+    {"title" : {$regex :"Opera"}},
+    {title: 1, year: 1}
+)
+
+/*
+Caret (^) operator
+In the previous example, the titles in the output contained the given word
+Opera at any position. To find only the strings that start with the given
+regular expression, the caret operator (^) can be used.
+*/
+db.movies.find(
+    {"title" : {$regex :"^Opera"}},
+    {title: 1, year: 1}
+)
+
+/* Dollar ($) operator
+You can also match the strings that end with the given regular expression.
+To do this, use a dollar operator ($).
+In the following example, you are trying to find movie titles that end with the word "Opera"
+*/
+
+db.movies.find(
+    {"title" : {$regex :"Opera$"}},
+    {title: 1, cast: 1, _id:0}
+)
+
+/* Case-Insensitive Search
+MongoDB provides the $options operator for this, which can be used for case-insensitive regular expression searches.
+The following query retrieves the titles containing the word the in lowercase
+*/
+db.movies.find(
+    {"title" : {"$regex" : "the"}}
+).count()
+
+/* Now, try the same query with case-insensitive search. */
+db.movies.find(
+    {"title" :
+        {"$regex" : "the", $options: "i"}
+    }
+).count()
