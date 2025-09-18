@@ -1,0 +1,45 @@
+/*
+Custom functions
+*/
+
+//More samples for exercises
+var findMoviesByTitleAndYear3 = function(p1, p2){
+    let movieList = db.movies.find(
+        {$or:[
+            {"title": p1},
+            {"year": p1}
+        ]}
+    )
+    .sort({year : 1, title:1}).toArray()
+    print(`Params: ${p1} ${p2}`)
+    print("RESULTS ARE: " + movieList.length)
+    for(let i =0; i < movieList.length; i++){
+        print(movieList[i].title, movieList[i].year)
+    }
+}
+//Aufruf
+findMoviesByTitleAndYear3(/Hot/, 1920)
+
+
+
+let findMoviesByGenre = function(genre, pageNumber, pageSize){
+          let toSkip = 0;
+          if(pageNumber < 2){
+              toSkip = 0;
+          } else{
+              toSkip = (pageNumber -1) * pageSize;
+          }
+          let movies = db.movies.find(
+              {"title" : genre},
+              {"_id" : 0, "title" :1})
+          .sort({"imdb.rating" : -1})
+          .skip(toSkip)
+          .limit(pageSize)
+          .toArray()
+          print("************* Page : " + pageNumber)
+          for(var i =0; i < movies.length; i++){
+              print(movies[i].title)
+          }
+}
+
+findMoviesByGenre("Drama", 5,3)
