@@ -43,7 +43,7 @@ let getTitles2 = function(p1,p2){
     let movies = db.movies.find(
         {$or:[
             {"title": p1},
-            {"year": p1}
+            {"year": p2}
         ]}
         ).sort({year : 1, title:1}).toArray()
   //print output
