@@ -14,15 +14,15 @@ use mflix
 //check output
 db.movies.find(
   {"imdb.rating" : {$lt : 2},"imdb.votes" : {$gt : 50000}},
-  {"title" : 1, "awards.win": 1}
-).sort({"awards.win":1})
+  {"title" : 1, "awards.wins": 1}
+).sort({"awards.wins":1})
 
 //delete one movie
 db.movies.findOneAndDelete({
     "imdb.rating" : {$lt : 2},
     "imdb.votes" : {$gt : 50000}
   },{
-    "sort" : {"awards.won":1},
+    "sort" : {"awards.wins":1},
     "projection" : {"title" : 1}
   }
 )
